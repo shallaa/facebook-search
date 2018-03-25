@@ -32,7 +32,8 @@
     <div><span>학교: </span><input type="text" name="students"></div>
     <div><span>방문: </span><input type="text" name="visitors"></div>
     <div><span>언어: </span><input type="text" name="speakers"></div>
-    <div><span>성별: </span><select name="gender"><option value="">모두</option><option value="males">남자</option><option value="females">여자</option></select>
+    <div><span>나이: </span><input type="number" name="age1"> ~ <input type="number" name="age2"></div>
+    <div><span>성별: </span><select name="gender"><option value="">모두</option><option value="males">남자</option><option value="females">여자</option></select></div>
     <div><button>검색</button></div>
   </form>
 </div>
@@ -49,12 +50,15 @@
     visitors: makeQuery('/pages-named/visitors'),
     speakers: makeQuery('/pages-named/speakers'),
     stories: makeQuery('/stories-keyword'),
-    gender: (value) => value ? `/${value}` : ''
+    gender: (value) => value ? `/${value}` : '',
+    age: (age1, age2) => (age1 && age2) ? `/str/${Math.max(+age1, 1)}/${Math.min(+age2, 150)}/users-age-2` : ''
   }
   const submitHandler = event => {
     event.preventDefault()
-    const queries = $('input[type=text],select', event.currentTarget).reduce((prev, input) => (prev += queryList[input.name](input.value), prev), '')
-    openSearchPage(queries)
+    const target = event.currentTarget
+    const queries = $('input[type=text],select', target).reduce((prev, input) => (prev += queryList[input.name](input.value), prev), '')
+    const age = queryList.age(...$('input[name=age1],input[name=age2]', target).map(input => input.value))
+    openSearchPage(queries + age)
   }
   $('#search-stories,#search-people').forEach(form => form.addEventListener('submit', submitHandler))
 </script>
