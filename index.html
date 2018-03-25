@@ -32,6 +32,7 @@
     <div><span>학교: </span><input type="text" name="students"></div>
     <div><span>방문: </span><input type="text" name="visitors"></div>
     <div><span>언어: </span><input type="text" name="speakers"></div>
+    <div><span>성별: </span><select name="gender"><option value="">모두</option><option value="males">남자</option><option value="females">여자</option></select>
     <div><button>검색</button></div>
   </form>
 </div>
@@ -47,11 +48,12 @@
     students: makeQuery('/pages-named/students'),
     visitors: makeQuery('/pages-named/visitors'),
     speakers: makeQuery('/pages-named/speakers'),
-    stories: makeQuery('/stories-keyword')
+    stories: makeQuery('/stories-keyword'),
+    gender: (value) => value ? `/${value}` : ''
   }
   const submitHandler = event => {
     event.preventDefault()
-    const queries = $('input[type=text]', event.currentTarget).reduce((prev, input) => (prev += queryList[input.name](input.value), prev), '')
+    const queries = $('input[type=text],select', event.currentTarget).reduce((prev, input) => (prev += queryList[input.name](input.value), prev), '')
     openSearchPage(queries)
   }
   $('#search-stories,#search-people').forEach(form => form.addEventListener('submit', submitHandler))
