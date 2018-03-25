@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Facebook Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Facebook Search">
+  <meta property="og:site_name" content="Facebook Search">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://shallaa.github.io/facebook-search">
+  <meta property="og:image" content="https://shallaa.github.io/facebook-search/mabb.jpg">
+  <meta property="og:description" content="명란아보카도비빔밥은맛있어서자꾸또먹고싶다">
+</head>
+<body>
+<h1>Facebook Search</h1>
+<div class="header">
+  <h2>profileids is empty</h2>
+  <span><input type="checkbox" name="friends">친구</span>
+</div>
+<div class="stories">
+  <h3>Stories</h3>
+  <button data-query="stories-by">작성한 포스트</button>
+  <button data-query="stories-commented">댓글을 남긴 포스트</button>
+  <button data-query="stories-tagged">태그가 달린 포스트</button>
+</div>
+<div class="places">
+  <h3>Places</h3>
+  <button data-query="places-visited">방문한 곳</button>
+  <button data-query="recent-places-visited">최근 방문한 곳</button>
+  <button data-query="places-checked-in">체크인 한 곳</button>
+  <button data-query="places-liked">좋아요 한 곳</button>
+</div>
+<div class="photos">
+  <h3>Photos</h3>
+  <button data-query="photos-by">업로드한 사진</button>
+  <button data-query="photos-of">태그가 달린 사진</button>
+  <button data-query="photos-liked">좋아요 한 사진</button>
+  <button data-query="photos-commented">댓글을 남긴 사진</button>
+</div>
+<div class="videos">
+  <h3>Videos</h3>
+  <button data-query="videos">프로필에 있는 동영상</button>
+  <button data-query="videos-by">업로드한 동영상</button>
+  <button data-query="videos-of">태그가 달린 동영상</button>
+  <button data-query="videos-liked">좋아요 한 동영상</button>
+  <button data-query="videos-commented">댓글을 남긴 동영상</button>
+</div>
+<div class="events">
+  <h3>Events</h3>
+  <button data-query="events">초대받은 이벤트</button>
+  <button data-query="events-joined">참석을 선택한 이벤트</button>
+</div>
+<div class="etc">
+  <h3>Etc</h3>
+  <button data-query="pages-liked">좋아요 한 페이지</button>
+  <button data-query="apps-used">사용한 앱</button>
+  <button data-query="friends">친구</button>
+  <button data-query="groups">그룹</button>
+  <button data-query="employees">직장 동료</button>
+  <button data-query="relatives">친척</button>
+</div>
+<script>
+  const $ = (el, parent) => (el = (parent || document).querySelectorAll(el), el.length === 1 ? el[0] : Array.from(el))
+  const ParamUtil = (() => {
+    const search = window.location.search.substr(1)
+    const params = search.split('&').reduce((prev, param) => {
+      if (param) {
+        let [key, value] = param.split('=')
+        if (value.includes('|')) value = value.split('|')
+        prev[key] = value
+      }
+      return prev
+    }, {})
+    return {
+      getParam(key) {
+        return params[key]
+      }
+    }  
+  })()
+  const profileIds = ParamUtil.getParam('profileids')
+  const openSearchPage = (query) => {
+    if (profileIds) {
+      const ids = Array.isArray(profileIds) ? profileIds : [profileIds]
+      const friends = $('input[name=friends]').checked ? '/friends' : ''
+      const queries = ids.reduce((prev, id) => prev += `/${id}${friends}/${query}`, '')
+      window.open(`https://www.facebook.com/search${queries}/intersect`)
+    }
+  }
+  if (profileIds) {
+    $('.header>h2').innerText = profileIds
+  }
+  $('button[data-query]').forEach(button => button.addEventListener('click', event => openSearchPage(event.currentTarget.dataset.query)))
+</script>
+</body>
+</html>
