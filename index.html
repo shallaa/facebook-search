@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Facebook Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Facebook Search">
+  <meta property="og:site_name" content="Facebook Search">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://shallaa.github.io/facebook-search">
+  <meta property="og:image" content="https://shallaa.github.io/facebook-search/mabb.jpg">
+  <meta property="og:description" content="명란아보카도비빔밥은맛있어서자꾸또먹고싶다">
+  <style>
+    form div{height:22px}
+    div span{display:inline-block;width:50px}
+  </style>
+</head>
+<body>
+<h1>Facebook Search</h1>
+<div>
+  <h2>포스트 검색</h2>
+  <form id="search-stories">
+    <div><span>포스트: </span><input type="text" name="stories"><button>검색</button></div>
+  </form>
+</div>
+<div>
+  <h2>인물 검색</h2>
+  <form id="search-people">
+    <div><span>이름: </span><input type="text" name="users"></div>
+    <div><span>지역: </span><input type="text" name="residents"></div>
+    <div><span>회사: </span><input type="text" name="emplyees"></div>
+    <div><span>좋아요: </span><input type="text" name="likers"></div>
+    <div><span>학교: </span><input type="text" name="students"></div>
+    <div><span>방문: </span><input type="text" name="visitors"></div>
+    <div><span>언어: </span><input type="text" name="speakers"></div>
+    <div><button>검색</button></div>
+  </form>
+</div>
+<script>
+  const $ = el => (el = document.querySelectorAll(el), el.length === 1 ? el[0] : Array.from(el))
+  const makeQuery = (value, template) => value ? `/str/${value}${template}` : ''
+  const queryList = {
+    users(users) {return makeQuery(users, '/users-named')},
+    residents(residents) {return makeQuery(residents, '/pages-named/residents/present')},
+    emplyees(emplyees) {return makeQuery(emplyees, '/pages-named/employees/present')},
+    likers(likers) {return makeQuery(likers, '/pages-named/likers')},
+    students(students) {return makeQuery(students, '/pages-named/students')},
+    visitors(visitors) {return makeQuery(visitors, '/pages-named/visitors')},
+    speakers(speakers) {return makeQuery(speakers, '/pages-named/speakers')},
+    stories(stories) {return makeQuery(stories, '/stories-keyword')}
+  }
+  const openSearchPage = queries => queries && window.open(`https://www.facebook.com/search${queries}/intersect`)
+  $('#search-stories').addEventListener('submit', event => {
+    event.preventDefault()
+    const queries = queryList.stories($('#search-stories input[name=stories]').value)
+    openSearchPage(queries)
+  })
+  $('#search-people').addEventListener('submit', event => {
+    event.preventDefault()
+    const queries = $('#search-people input[type=text]').reduce((prev, input) => (prev += queryList[input.name](input.value), prev), '')
+    openSearchPage(queries)
+  })
+</script>
+</body>
+</html>
