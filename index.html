@@ -11,7 +11,7 @@
   <meta property="og:description" content="명란아보카도비빔밥은맛있어서자꾸또먹고싶다">
   <style>
     form div{padding:5px}
-    div span{display:inline-block;min-width:100px}
+    div span{display:inline-block;min-width:70px}
   </style>
 </head>
 <body>
@@ -36,29 +36,25 @@
   </form>
 </div>
 <script>
-  const $ = el => (el = document.querySelectorAll(el), el.length === 1 ? el[0] : Array.from(el))
-  const makeQuery = (value, template) => value ? `/str/${value}${template}` : ''
-  const queryList = {
-    users(users) {return makeQuery(users, '/users-named')},
-    residents(residents) {return makeQuery(residents, '/pages-named/residents/present')},
-    emplyees(emplyees) {return makeQuery(emplyees, '/pages-named/employees/present')},
-    likers(likers) {return makeQuery(likers, '/pages-named/likers')},
-    students(students) {return makeQuery(students, '/pages-named/students')},
-    visitors(visitors) {return makeQuery(visitors, '/pages-named/visitors')},
-    speakers(speakers) {return makeQuery(speakers, '/pages-named/speakers')},
-    stories(stories) {return makeQuery(stories, '/stories-keyword')}
-  }
+  const $ = (el, parent) => (el = (parent || document).querySelectorAll(el), Array.from(el))
+  const makeQuery = (template) => ((value) => value ? `/str/${value}${template}` : '')
   const openSearchPage = queries => queries && window.open(`https://www.facebook.com/search${queries}/intersect`)
-  $('#search-stories').addEventListener('submit', event => {
+  const queryList = {
+    users: makeQuery('/users-named'),
+    residents: makeQuery('/pages-named/residents/present'),
+    emplyees: makeQuery('/pages-named/employees/present'),
+    likers: makeQuery('/pages-named/likers'),
+    students: makeQuery('/pages-named/students'),
+    visitors: makeQuery('/pages-named/visitors'),
+    speakers: makeQuery('/pages-named/speakers'),
+    stories: makeQuery('/stories-keyword')
+  }
+  const submitHandler = event => {
     event.preventDefault()
-    const queries = queryList.stories($('#search-stories input[name=stories]').value)
+    const queries = $('input[type=text]', event.currentTarget).reduce((prev, input) => (prev += queryList[input.name](input.value), prev), '')
     openSearchPage(queries)
-  })
-  $('#search-people').addEventListener('submit', event => {
-    event.preventDefault()
-    const queries = $('#search-people input[type=text]').reduce((prev, input) => (prev += queryList[input.name](input.value), prev), '')
-    openSearchPage(queries)
-  })
+  }
+  $('#search-stories,#search-people').forEach(form => form.addEventListener('submit', submitHandler))
 </script>
 </body>
 </html>
